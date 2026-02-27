@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#080810">
+<title>IdeaFlow 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --bg2: #0f0f1a;
+  --surface: #14141f;
+  --surface2: #1c1c2e;
+  --surface3: #22223a;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.11);
+  --gold: #f5c842;
+  --red: #ff5c5c;
+  --teal: #3fcfb4;
+  --blue: #5b9cf6;
+  --purple: #a78bfa;
+  --orange: #fb923c;
+  --pink: #f472b6;
+  --green: #34d399;
+  --text: #eeeef5;
+  --text2: #9999b5;
+  --text3: #55556a;
+  --r: 14px;
+  --r2: 20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overscroll-behavior:none}
+body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:200;background:rgba(8,8,16,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:2px;padding:0 12px;height:52px}
+.nav-btn{flex:1;padding:8px 4px;border:none;background:none;color:var(--text3);font-family:'Instrument Sans',sans-serif;font-size:12px;cursor:pointer;border-radius:8px;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nav-btn .nav-icon{font-size:18px}
+.nav-btn.active{color:var(--gold)}
+.nav-btn:hover{color:var(--text2)}
+
+/* PAGES */
+.page{display:none;padding:16px 16px 100px;max-width:680px;margin:0 auto;animation:fade-in .2s ease}
+.page.active{display:block}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* TYPOGRAPHY */
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:4px}
+.page-title span{color:var(--gold)}
+.page-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);margin-bottom:8px;font-weight:600}
+
+/* CARDS & SURFACES */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:14px;transition:border-color .2s}
+.card:focus-within{border-color:rgba(245,200,66,.2)}
+
+/* INPUTS */
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:rgba(245,200,66,.4)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+select{cursor:pointer}
+select option{background:#1c1c2e}
+textarea{resize:none;line-height:1.6}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;border-radius:10px;font-family:'Instrument Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .18s;line-height:1;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-gold{background:var(--gold);color:#0a0a0a}
+.btn-gold:hover{background:#f7d460}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-teal{background:rgba(63,207,180,.12);color:var(--teal);border:1px solid rgba(63,207,180,.25)}
+.btn-teal:hover{background:rgba(63,207,180,.2)}
+.btn-purple{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.25)}
+.btn-purple:hover{background:rgba(167,139,250,.2)}
+.btn-red{background:rgba(255,92,92,.1);color:var(--red);border:1px solid rgba(255,92,92,.2)}
+.btn-blue{background:rgba(91,156,246,.12);color:var(--blue);border:1px solid rgba(91,156,246,.25)}
+.btn-sm{padding:6px 11px;font-size:12px;border-radius:8px}
+.btn-xs{padding:4px 8px;font-size:11px;border-radius:6px}
+.btn-icon{padding:8px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center}
+.btn-icon:hover{color:var(--text);border-color:var(--border2)}
+.btn-full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>.btn{flex:1}
+
+/* VOICE BTN */
+.btn-voice{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.btn-voice.recording{background:rgba(255,92,92,.12);border-color:rgba(255,92,92,.5);color:var(--red)}
+.btn-voice.recording::before{content:'';position:absolute;inset:-3px;border-radius:13px;border:2px solid rgba(255,92,92,.4);animation:pulse-ring 1.2s ease-out infinite}
+@keyframes pulse-ring{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.15)}}
+
+/* CHIPS */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;font-family:'Instrument Sans',sans-serif}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.active{background:var(--gold);border-color:var(--gold);color:#0a0a0a;font-weight:600}
+.chip.status-active{background:rgba(63,207,180,.15);border-color:rgba(63,207,180,.3);color:var(--teal)}
+.chip.status-done{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.3);color:var(--green)}
+.chip.status-archived{background:rgba(100,100,130,.1);border-color:rgba(100,100,130,.2);color:var(--text3)}
+
+/* PRIORITY BADGES */
+.pbadge{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.p5{background:rgba(255,92,92,.15);color:#ff7070;border:1px solid rgba(255,92,92,.3)}
+.p4{background:rgba(255,160,50,.15);color:#ffaa44;border:1px solid rgba(255,160,50,.3)}
+.p3{background:rgba(245,200,66,.15);color:var(--gold);border:1px solid rgba(245,200,66,.3)}
+.p2{background:rgba(91,156,246,.15);color:var(--blue);border:1px solid rgba(91,156,246,.3)}
+.p1{background:rgba(100,100,130,.12);color:var(--text3);border:1px solid rgba(100,100,130,.2)}
+
+/* IDEA CARDS */
+.idea-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 14px 14px 18px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s;margin-bottom:8px;animation:card-in .25s ease}
+@keyframes card-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.idea-card:hover{border-color:var(--border2);box-shadow:0 4px 24px rgba(0,0,0,.35);transform:translateY(-1px)}
+.idea-card.pinned{border-color:rgba(245,200,66,.2);background:linear-gradient(135deg,var(--surface),rgba(245,200,66,.03))}
+.idea-card.locked{opacity:.7}
+.pbar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.idea-body{flex:1;min-width:0}
+.idea-text{font-size:15px;line-height:1.55;color:var(--text);word-break:break-word}
+.idea-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.meta-tag{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:3px}
+.card-actions{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap;align-items:center}
+
+/* EXPANDABLE SECTIONS */
+.expand-section{font-size:13px;color:var(--text2);margin-top:8px;padding:10px 12px;background:var(--surface2);border-radius:8px;display:none;line-height:1.6}
+.expand-section.visible{display:block}
+.expand-section.elaboration{border-left:2px solid var(--teal);font-style:italic}
+.expand-section.suggestions{border-left:2px solid var(--purple)}
+.expand-section.suggestions ul{padding-left:16px;margin-top:4px}
+.expand-section.suggestions li{margin-bottom:3px}
+.expand-section.chat-log{border-left:2px solid var(--blue);max-height:200px;overflow-y:auto}
+.expand-section.followups{border-left:2px solid var(--orange)}
+
+/* FOLLOW-UP IDEAS */
+.followup-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px 10px 16px;position:relative;margin-top:6px;font-size:13px}
+.followup-card .pbar{border-radius:99px}
+
+/* TAGS */
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:11px;background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.2)}
+
+/* TOPIC CARDS */
+.topic-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:12px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.topic-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.topic-card .tc-accent{position:absolute;top:0;left:0;right:0;height:3px}
+.topic-card .tc-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.topic-card .tc-icon{font-size:28px}
+.topic-card .tc-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;flex:1}
+.topic-card .tc-count{font-size:12px;color:var(--text3)}
+.topic-card .tc-desc{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.topic-card .tc-urls{display:flex;flex-wrap:wrap;gap:4px}
+.url-pill{font-size:11px;color:var(--blue);background:rgba(91,156,246,.1);border:1px solid rgba(91,156,246,.2);border-radius:99px;padding:2px 8px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;display:inline-block}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.dash-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center}
+.dash-n{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;color:var(--gold);line-height:1}
+.dash-l{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.progress-bar{height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;margin:6px 0}
+.progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--teal));transition:width .4s ease}
+.review-card{background:linear-gradient(135deg,rgba(245,200,66,.08),rgba(63,207,180,.05));border:1px solid rgba(245,200,66,.15);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.review-card h4{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--gold);margin-bottom:6px}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:16px}
+.search-wrap input{padding-left:38px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px;pointer-events:none}
+.search-result{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.search-result:hover{border-color:var(--border2)}
+.search-result .sr-topic{font-size:11px;color:var(--text3);margin-bottom:3px}
+.search-result .sr-text{font-size:14px;line-height:1.5}
+.highlight{background:rgba(245,200,66,.25);color:var(--gold);border-radius:3px;padding:0 2px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:flex-end;justify-content:center;padding:12px;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:22px;width:100%;max-width:500px;transform:translateY(20px);transition:transform .3s;max-height:85vh;overflow-y:auto}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px;margin-bottom:6px}
+.modal p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.modal-row{display:flex;gap:8px;margin-top:12px}
+.modal-row .btn{flex:1}
+.modal label{font-size:12px;color:var(--text3);display:block;margin-bottom:4px;margin-top:10px;text-transform:uppercase;letter-spacing:.5px}
+
+/* URL LIST */
+.url-list{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.url-item{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--blue)}
+.url-item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.url-item button{background:none;border:none;color:var(--text3);cursor:pointer;padding:2px;font-size:14px}
+.url-item button:hover{color:var(--red)}
+.url-add-row{display:flex;gap:6px}
+.url-add-row input{flex:1}
+
+/* CHAT */
+.chat-messages{display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;margin-bottom:12px;padding:4px}
+.chat-msg{padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.55;max-width:88%}
+.chat-msg.user{background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.2);align-self:flex-end;color:var(--text)}
+.chat-msg.ai{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;color:var(--text2)}
+.chat-input-row{display:flex;gap:8px}
+.chat-input-row input{flex:1}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px}
+.cal-day-label{text-align:center;font-size:10px;color:var(--text3);padding:4px 0;text-transform:uppercase;letter-spacing:.5px}
+.cal-day{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;cursor:pointer;transition:all .15s;position:relative;background:var(--surface)}
+.cal-day:hover{border-color:var(--border2)}
+.cal-day.today{border:1px solid var(--gold);color:var(--gold)}
+.cal-day.has-ideas::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--teal)}
+.cal-day.empty{background:transparent;cursor:default}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface3);border:1px solid var(--border2);border-radius:12px;padding:11px 20px;font-size:14px;color:var(--text);z-index:3000;pointer-events:none;opacity:0;transition:all .25s;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(63,207,180,.4)}
+.toast.error{border-color:rgba(255,92,92,.4)}
+
+/* SPINNER */
+.spinner{width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+.spinner-light{border:2px solid rgba(255,255,255,.1);border-top-color:var(--teal)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-icon{font-size:44px;margin-bottom:12px}
+.empty h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--text2);margin-bottom:6px}
+.empty p{font-size:13px;line-height:1.6}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:14px 0}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+
+@media(max-width:480px){
+  .nav-btn{font-size:10px}
+  .dash-grid{grid-template-columns:1fr 1fr}
+}
+
+@media print{
+  .nav,.btn,.card .btn-row,input,select,textarea,.modal-overlay,.toast{display:none!important}
+  body{background:#fff;color:#000}
+  .idea-card{background:#fff;border:1px solid #ddd;break-inside:avoid}
+  .pbar{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showPage('home')" id="nav-home">
+    <span class="nav-icon">💡</span>Ideen
+  </button>
+  <button class="nav-btn" onclick="showPage('topics')" id="nav-topics">
+    <span class="nav-icon">📂</span>Themen
+  </button>
+  <button class="nav-btn" onclick="showPage('search')" id="nav-search">
+    <span class="nav-icon">🔍</span>Suche
+  </button>
+  <button class="nav-btn" onclick="showPage('dashboard')" id="nav-dashboard">
+    <span class="nav-icon">📊</span>Dashboard
+  </button>
+  <button class="nav-btn" onclick="showPage('settings')" id="nav-settings">
+    <span class="nav-icon">⚙️</span>Settings
+  </button>
+</nav>
+
+<!-- ═══ PAGE: HOME ═══ -->
+<div class="page active" id="page-home">
+  <div style="padding-top:16px">
+    <div class="page-title">IDEA<span>FLOW</span></div>
+    <div class="page-sub">Deine Ideen. Organisiert. Ausgearbeitet.</div>
+  </div>
+
+  <!-- INPUT CARD -->
+  <div class="card">
+    <div class="row" style="margin-bottom:10px">
+      <select id="topicSelect" onchange="handleTopicChange()" style="flex:1">
+        <option value="">📂 Thema wählen…</option>
+      </select>
+      <input type="text" id="newTopicInput" placeholder="Neues Thema…" style="display:none;flex:1" onblur="confirmNewTopic()" onkeydown="if(event.key==='Enter')confirmNewTopic()">
+    </div>
+    <textarea id="ideaInput" placeholder="Deine Idee eingeben oder diktieren…" rows="3" style="margin-bottom:10px"></textarea>
+    <div class="row" style="margin-bottom:8px">
+      <input type="text" id="tagsInput" placeholder="Tags: #marathon #idee (optional)" style="font-size:13px">
+    </div>
+    <div class="row">
+      <button class="btn btn-voice" id="voiceBtn" onclick="toggleVoice()" style="position:relative">
+        🎤 <span id="voiceLabel">Diktieren</span>
+      </button>
+      <button class="btn btn-gold" onclick="addIdea()">✦ Speichern</button>
+      <button class="btn btn-teal" onclick="addAndAnalyze()"><span id="analyzeLabel">⚡ KI</span></button>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="section-label">Filter</div>
+  <div class="chips" id="filterChips"></div>
+
+  <!-- SORT -->
+  <div style="display:flex;gap:6px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+    <span style="font-size:11px;color:var(--text3)">SORT:</span>
+    <button class="btn btn-ghost btn-xs active" id="sort-neu" onclick="setSort('neu')">Neueste</button>
+    <button class="btn btn-ghost btn-xs" id="sort-prio" onclick="setSort('prio')">Priorität</button>
+    <button class="btn btn-ghost btn-xs" id="sort-thema" onclick="setSort('thema')">Thema</button>
+    <button class="btn btn-ghost btn-xs" id="sort-status" onclick="setSort('status')">Status</button>
+    <button class="btn btn-teal btn-xs" onclick="analyzeAll()" style="margin-left:auto"><span id="allLabel">✦ Alle analysieren</span></button>
+  </div>
+
+  <div id="ideasContainer"></div>
+</div>
+
+<!-- ═══ PAGE: TOPICS ═══ -->
+<div class="page" id="page-topics">
+  <div style="padding-top:16px">
+    <div class="page-title">THE<span>MEN</span></div>
+    <div class="page-sub">Kontext & Links für präzise KI-Analysen</div>
+  </div>
+  <button class="btn btn-gold btn-full" onclick="openTopicModal()" style="margin-bottom:16px">➕ Neues Thema erstellen</button>
+  <div id="topicsContainer"></div>
+</div>
+
+<!-- ═══ PAGE: SEARCH ═══ -->
+<div class="page" id="page-search">
+  <div style="padding-top:16px">
+    <div class="page-title">SU<span>CHE</span></div>
+    <div class="page-sub">Finde Ideen & ihren Verlauf</div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Stichwort, Tag, Thema…" oninput="doSearch()">
+  </div>
+  <div id="searchResults"></div>
+</div>
+
+<!-- ═══ PAGE: DASHBOARD ═══ -->
+<div class="page" id="page-dashboard">
+  <div style="padding-top:16px">
+    <div class="page-title">DASH<span>BOARD</span></div>
+    <div class="page-sub">Dein Überblick & Fortschritt</div>
+  </div>
+  <div id="dashboardContent"></div>
+</div>
+
+<!-- ═══ PAGE: SETTINGS ═══ -->
+<div class="page" id="page-settings">
+  <div style="padding-top:16px">
+    <div class="page-title">SET<span>TINGS</span></div>
+    <div class="page-sub">API, Ziele & Einstellungen</div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Anthropic API Key</div>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-…" style="margin-bottom:10px">
+    <div class="row">
+      <button class="btn btn-gold" onclick="saveApiKey()">✓ Verbinden</button>
+      <button class="btn btn-ghost" onclick="showApiHelp()">? Wie bekomme ich einen Key</button>
+    </div>
+    <div id="apiStatus" style="margin-top:10px;font-size:13px;color:var(--text3)"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Wochenziel</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input type="number" id="weekGoalInput" placeholder="z.B. 10" min="1" max="100" style="width:80px;flex:none">
+      <span style="font-size:14px;color:var(--text2)">Ideen pro Woche</span>
+      <button class="btn btn-ghost btn-sm" onclick="saveWeekGoal()" style="margin-left:auto">Speichern</button>
+    </div>
+    <div id="weekGoalStatus" style="font-size:13px;color:var(--text2)"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Daten</div>
+    <div class="row">
+      <button class="btn btn-ghost" onclick="exportText()">📋 Text kopieren</button>
+      <button class="btn btn-ghost" onclick="exportEmail()">✉️ E-Mail</button>
+      <button class="btn btn-ghost" onclick="window.print()">🖨️ PDF</button>
+    </div>
+    <div class="divider"></div>
+    <button class="btn btn-red btn-full" onclick="confirmClearAll()">🗑️ Alle Daten löschen</button>
+  </div>
+
+  <div class="card" id="apiHelpCard" style="display:none">
+    <div class="section-label">So bekommst du einen API Key</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.8">
+      <b style="color:var(--gold)">1.</b> Gehe auf <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue)">console.anthropic.com</a><br>
+      <b style="color:var(--gold)">2.</b> Account erstellen / einloggen<br>
+      <b style="color:var(--gold)">3.</b> Links: „API Keys" → „Create Key"<br>
+      <b style="color:var(--gold)">4.</b> Unter „Billing" mind. $5 aufladen<br>
+      <b style="color:var(--gold)">5.</b> Key kopieren und oben einfügen<br><br>
+      <span style="color:var(--text3)">Kosten: ~$0.001 pro Analyse. $5 reichen für Monate.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- TOPIC MODAL -->
+<div class="modal-overlay" id="topicModal">
+  <div class="modal">
+    <h2 id="topicModalTitle">📂 NEUES THEMA</h2>
+    <label>Name & Emoji</label>
+    <input type="text" id="tmName" placeholder="z.B. 🏃 Halbmarathon">
+    <label>Farbe</label>
+    <div class="row" id="colorPicker" style="margin-bottom:4px">
+      <div class="color-opt" data-color="#f5c842" onclick="selectColor('#f5c842')" style="width:28px;height:28px;border-radius:50%;background:#f5c842;cursor:pointer;border:2px solid transparent"></div>
+      <div class="color-opt" data-color="#3fcfb4" onclick="selectColor('#3fcfb4')" style="width:28px;height:28px;border-radius:50%;background:#3fcfb4;cursor:pointer;border:2px solid transparent"></div>
+      <div class="color-opt" data-color="#ff5c5c" onclick="selectColor('#ff5c5c')" style="width:28px;height:28px;border-radius:50%;background:#ff5c5c;cursor:pointer;border:2px solid transparent"></div>
+      <div class="color-opt" data-color="#5b9cf6" onclick="selectColor('#5b9cf6')" style="width:28px;height:28px;border-radius:50%;background:#5b9cf6;cursor:pointer;border:2px solid transparent"></div>
+      <div class="color-opt" data-color="#a78bfa" onclick="selectColor('#a78bfa')" style="width:28px;height:28px;border-radius:50%;background:#a78bfa;cursor:pointer;border:2px solid transparent"></div>
+      <div class="color-opt" data-color="#fb923c" onclick="selectColor('#fb923c')" style="width:28px;height:28px;border-radius:50%;background:#fb923c;cursor:pointer;border:2px solid transparent"></div>
+      <div class="color-opt" data-color="#34d399" onclick="selectColor('#34d399')" style="width:28px;height:28px;border-radius:50%;background:#34d399;cursor:pointer;border:2px solid transparent"></div>
+      <div class="color-opt" data-color="#f472b6" onclick="selectColor('#f472b6')" style="width:28px;height:28px;border-radius:50%;background:#f472b6;cursor:pointer;border:2px solid transparent"></div>
+    </div>
+    <label>Beschreibung / Kontext für KI</label>
+    <textarea id="tmDesc" placeholder="z.B. Ich bin 42, laufe seit 6 Monaten, Ziel unter 2h beim Wien-Halbmarathon am 15. Juni…" rows="3"></textarea>
+    <label>Links (unbegrenzt)</label>
+    <div id="tmUrls" class="url-list"></div>
+    <div class="url-add-row">
+      <input type="url" id="tmUrlInput" placeholder="https://…">
+      <button class="btn btn-ghost btn-sm" onclick="addTopicUrl()">+ Link</button>
+    </div>
+    <div class="modal-row">
+      <button class="btn btn-ghost" onclick="closeModal('topicModal')">Abbrechen</button>
+      <button class="btn btn-gold" onclick="saveTopic()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT IDEA MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h2>✏️ IDEE BEARBEITEN</h2>
+    <input type="hidden" id="editId">
+    <label>Text</label>
+    <textarea id="editText" rows="3"></textarea>
+    <label>Thema</label>
+    <select id="editTopic"></select>
+    <label>Status</label>
+    <select id="editStatus">
+      <option value="offen">Offen</option>
+      <option value="aktiv">In Arbeit</option>
+      <option value="erledigt">Erledigt</option>
+      <option value="archiviert">Archiviert</option>
+    </select>
+    <label>Priorität</label>
+    <select id="editPriority">
+      <option value="1">1 – Niedrig</option>
+      <option value="2">2 – Normal</option>
+      <option value="3">3 – Mittel</option>
+      <option value="4">4 – Hoch</option>
+      <option value="5">5 – Kritisch</option>
+    </select>
+    <label>Tags</label>
+    <input type="text" id="editTags" placeholder="#tag1 #tag2">
+    <label>Notiz / Verlauf-Eintrag</label>
+    <textarea id="editNote" rows="2" placeholder="Was ist seitdem passiert?"></textarea>
+    <div class="modal-row">
+      <button class="btn btn-ghost" onclick="closeModal('editModal')">Abbrechen</button>
+      <button class="btn btn-gold" onclick="saveEdit()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT MODAL -->
+<div class="modal-overlay" id="chatModal">
+  <div class="modal">
+    <h2>💬 MIT KI CHATTEN</h2>
+    <p id="chatIdeaPreview" style="background:var(--surface2);border-radius:8px;padding:10px;font-size:13px;margin-bottom:12px"></p>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Frage stellen…" onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="btn btn-teal" onclick="sendChat()"><span id="chatSendLabel">Senden</span></button>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('chatModal')" style="margin-top:10px;width:100%">Schließen</button>
+    <input type="hidden" id="chatIdeaId">
+  </div>
+</div>
+
+<!-- FOLLOWUP MODAL -->
+<div class="modal-overlay" id="followupModal">
+  <div class="modal">
+    <h2>💡 FOLGEIDEE</h2>
+    <p id="followupParentPreview" style="background:var(--surface2);border-radius:8px;padding:10px;font-size:13px;margin-bottom:12px"></p>
+    <label>Folgeidee</label>
+    <textarea id="followupText" rows="3" placeholder="Deine Folgeidee…"></textarea>
+    <div class="modal-row">
+      <button class="btn btn-ghost" onclick="closeModal('followupModal')">Abbrechen</button>
+      <button class="btn btn-gold" onclick="saveFollowup()">Speichern</button>
+    </div>
+    <input type="hidden" id="followupParentId">
+  </div>
+</div>
+
+<!-- CALENDAR MODAL -->
+<div class="modal-overlay" id="calModal">
+  <div class="modal">
+    <h2>📅 KALENDER</h2>
+    <div id="calContent"></div>
+    <button class="btn btn-ghost btn-full" onclick="closeModal('calModal')" style="margin-top:12px">Schließen</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let ideas = JSON.parse(localStorage.getItem('if2_ideas') || '[]');
+let topics = JSON.parse(localStorage.getItem('if2_topics') || '[]');
+let apiKey = localStorage.getItem('if2_apikey') || '';
+let weekGoal = parseInt(localStorage.getItem('if2_weekgoal') || '10');
+let currentFilter = 'alle';
+let currentSort = 'neu';
+let editingTopicId = null;
+let selectedColor = '#f5c842';
+let topicUrlsTemp = [];
+let chatHistory = [];
+let currentChatIdeaId = null;
+let isRecording = false;
+let mediaRecognition = null;
+
+function save() {
+  localStorage.setItem('if2_ideas', JSON.stringify(ideas));
+  localStorage.setItem('if2_topics', JSON.stringify(topics));
+}
+
+// Default topics if empty
+if (topics.length === 0) {
+  topics = [
+    { id: 't1', name: '💰 Geld verdienen', color: '#f5c842', desc: '', urls: [] },
+    { id: 't2', name: '🏃 Halbmarathon', color: '#3fcfb4', desc: '', urls: [] },
+    { id: 't3', name: '📅 Tagesplanung', color: '#5b9cf6', desc: '', urls: [] },
+    { id: 't4', name: '📖 Buch schreiben', color: '#a78bfa', desc: '', urls: [] },
+  ];
+  save();
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  if (id === 'home') { renderHome(); }
+  if (id === 'topics') renderTopics();
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'settings') renderSettings();
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════
+// TOPIC SELECT SYNC
+// ═══════════════════════════════════════
+function syncTopicSelect() {
+  const sel = document.getElementById('topicSelect');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">📂 Thema wählen…</option>';
+  topics.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t.id; o.textContent = t.name;
+    sel.appendChild(o);
+  });
+  const newOpt = document.createElement('option');
+  newOpt.value = '__new__'; newOpt.textContent = '➕ Neues Thema…';
+  sel.appendChild(newOpt);
+  if (cur) sel.value = cur;
+}
+
+function handleTopicChange() {
+  const sel = document.getElementById('topicSelect');
+  if (sel.value === '__new__') {
+    sel.value = '';
+    openTopicModal();
+  }
+}
+
+function confirmNewTopic() {}
+
+// ═══════════════════════════════════════
+// VOICE
+// ═══════════════════════════════════════
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast('Spracherkennung: bitte Safari auf iPhone nutzen', 'error'); return;
+  }
+  isRecording ? stopVoice() : startVoice();
+}
+function startVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  mediaRecognition = new SR();
+  mediaRecognition.lang = 'de-DE';
+  mediaRecognition.continuous = true;
+  mediaRecognition.interimResults = true;
+  const ta = document.getElementById('ideaInput');
+  const base = ta.value;
+  mediaRecognition.onresult = e => {
+    let interim = '', final = base;
+    for (let i = 0; i < e.results.length; i++) {
+      if (e.results[i].isFinal) final += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    ta.value = final + interim;
+  };
+  mediaRecognition.onerror = () => stopVoice();
+  mediaRecognition.onend = () => { if (isRecording) mediaRecognition.start(); };
+  mediaRecognition.start();
+  isRecording = true;
+  document.getElementById('voiceBtn').classList.add('recording');
+  document.getElementById('voiceLabel').textContent = 'Stop';
+}
+function stopVoice() {
+  if (mediaRecognition) { mediaRecognition.onend = null; mediaRecognition.stop(); }
+  isRecording = false;
+  document.getElementById('voiceBtn').classList.remove('recording');
+  document.getElementById('voiceLabel').textContent = 'Diktieren';
+}
+
+// ═══════════════════════════════════════
+// ADD IDEA
+// ═══════════════════════════════════════
+function addIdea(analyze = false) {
+  if (isRecording) stopVoice();
+  const text = document.getElementById('ideaInput').value.trim();
+  const topicId = document.getElementById('topicSelect').value;
+  if (!text) { showToast('Bitte eine Idee eingeben', 'error'); return null; }
+  if (!topicId || topicId === '__new__') { showToast('Bitte ein Thema wählen', 'error'); return null; }
+  const rawTags = document.getElementById('tagsInput').value;
+  const tags = rawTags.match(/#[\w\u00fc\u00e4\u00f6\u00dc\u00c4\u00d6\u00df]+/g) || [];
+  const idea = {
+    id: Date.now(),
+    text, topicId, tags,
+    priority: 3,
+    status: 'offen',
+    pinned: false,
+    locked: false,
+    elaboration: '',
+    suggestions: [],
+    followups: [],
+    chatLog: [],
+    history: [{ date: new Date().toISOString(), note: 'Erstellt' }],
+    aiAnalyzed: false,
+    createdAt: new Date().toISOString(),
+    date: new Date().toLocaleDateString('de-DE'),
+    timerStart: null,
+    timerTotal: 0,
+  };
+  ideas.unshift(idea);
+  save();
+  document.getElementById('ideaInput').value = '';
+  document.getElementById('tagsInput').value = '';
+  renderHome();
+  showToast('Idee gespeichert ✓', 'success');
+  return idea;
+}
+
+async function addAndAnalyze() {
+  const idea = addIdea();
+  if (!idea) return;
+  if (!apiKey) { showToast('API-Key fehlt – bitte in Settings eintragen', 'error'); return; }
+  document.getElementById('analyzeLabel').innerHTML = '<span class="spinner"></span>';
+  await analyzeIdea(idea.id);
+  document.getElementById('analyzeLabel').textContent = '⚡ KI';
+}
+
+// ═══════════════════════════════════════
+// AI CORE
+// ═══════════════════════════════════════
+async function callClaude(prompt, maxTokens = 800) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!res.ok) {
+    const e = await res.json();
+    throw new Error(e.error?.message || 'API Fehler ' + res.status);
+  }
+  const data = await res.json();
+  return data.content[0].text.trim();
+}
+
+function getTopicContext(topicId) {
+  const t = topics.find(x => x.id === topicId);
+  if (!t) return '';
+  let ctx = `Thema: ${t.name}`;
+  if (t.desc) ctx += `\nKontext: ${t.desc}`;
+  if (t.urls && t.urls.length) ctx += `\nReferenz-Links: ${t.urls.join(', ')}`;
+  return ctx;
+}
+
+async function analyzeIdea(id) {
+  const idea = ideas.find(i => i.id === id);
+  if (!idea) return;
+  const topicCtx = getTopicContext(idea.topicId);
+  const prompt = `Du bist ein persönlicher Strategie-Assistent. Analysiere diese Idee und antworte NUR mit validem JSON:
+
+${topicCtx}
+Idee: "${idea.text}"
+
+JSON:
+{
+  "priority": <1-5>,
+  "elaboration": "<ausgearbeitet, 2-4 Sätze, konkret und umsetzbar, auf Deutsch>",
+  "suggestions": ["<Schritt 1>","<Schritt 2>","<Schritt 3>"],
+  "umsetzungsplan": "<konkreter Plan mit Zeitrahmen, 3-5 Sätze>"
+}`;
+  try {
+    const raw = await callClaude(prompt);
+    const m = raw.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('Kein JSON');
+    const r = JSON.parse(m[0]);
+    idea.priority = r.priority || 3;
+    idea.elaboration = r.elaboration || '';
+    idea.suggestions = r.suggestions || [];
+    idea.umsetzungsplan = r.umsetzungsplan || '';
+    idea.aiAnalyzed = true;
+    idea.history.push({ date: new Date().toISOString(), note: `KI-Analyse: Priorität ${idea.priority}` });
+    save();
+    renderHome();
+    showToast('Analyse abgeschlossen ✓', 'success');
+  } catch(e) {
+    showToast('KI-Fehler: ' + e.message, 'error');
+  }
+}
+
+async function analyzeAll() {
+  if (!apiKey) { showToast('API-Key fehlt', 'error'); return; }
+  const pending = ideas.filter(i => !i.aiAnalyzed);
+  if (!pending.length) { showToast('Alle bereits analysiert'); return; }
+  document.getElementById('allLabel').innerHTML = `<span class="spinner spinner-light"></span> ${pending.length}…`;
+  for (const idea of pending) {
+    await analyzeIdea(idea.id);
+    await new Promise(r => setTimeout(r, 600));
+  }
+  document.getElementById('allLabel').textContent = '✦ Alle analysieren';
+  showToast(`${pending.length} Ideen analysiert ✓`, 'success');
+}
+
+async function researchTopic(topicId) {
+  if (!apiKey) { showToast('API-Key fehlt', 'error'); return; }
+  const t = topics.find(x => x.id === topicId);
+  if (!t) return;
+  const btn = document.getElementById('research_' + topicId);
+  if (btn) { btn.innerHTML = '<span class="spinner spinner-light"></span> Recherchiere…'; btn.disabled = true; }
+  const topicCtx = getTopicContext(topicId);
+  const existingIdeas = ideas.filter(i => i.topicId === topicId).map(i => i.text).slice(0, 5).join('; ');
+  const prompt = `Du bist ein Recherche-Assistent. Analysiere das Thema und generiere neue, kreative Ideen.
+
+${topicCtx}
+Bisherige Ideen: ${existingIdeas || 'keine'}
+
+Recherchiere was Experten und erfolgreiche Menschen in diesem Bereich empfehlen. Generiere 5 neue, konkrete und umsetzbare Ideen.
+
+Antworte NUR mit JSON:
+{"ideas":["<Idee 1>","<Idee 2>","<Idee 3>","<Idee 4>","<Idee 5>"],"summary":"<kurze Zusammenfassung der Recherche, 2 Sätze>"}`;
+  try {
+    const raw = await callClaude(prompt, 1000);
+    const m = raw.match(/\{[\s\S]*\}/);
+    const r = JSON.parse(m[0]);
+    r.ideas.forEach(text => {
+      ideas.unshift({
+        id: Date.now() + Math.random(),
+        text: '🔍 ' + text,
+        topicId, tags: ['#recherche'],
+        priority: 3, status: 'offen',
+        pinned: false, locked: false,
+        elaboration: '', suggestions: [], followups: [], chatLog: [],
+        history: [{ date: new Date().toISOString(), note: 'KI-Recherche Vorschlag' }],
+        aiAnalyzed: false,
+        createdAt: new Date().toISOString(),
+        date: new Date().toLocaleDateString('de-DE'),
+        timerTotal: 0,
+      });
+    });
+    save();
+    renderHome();
+    showToast(`${r.ideas.length} neue Ideen gefunden ✓`, 'success');
+    if (r.summary) showToast('📝 ' + r.summary);
+  } catch(e) {
+    showToast('Fehler: ' + e.message, 'error');
+  } finally {
+    if (btn) { btn.innerHTML = '🕵️ KI recherchieren'; btn.disabled = false; }
+  }
+}
+
+async function compareIdeas() {
+  if (!apiKey) { showToast('API-Key fehlt', 'error'); return; }
+  const topPrio = [...ideas].sort((a,b) => b.priority - a.priority).slice(0,2);
+  if (topPrio.length < 2) { showToast('Mindestens 2 Ideen nötig'); return; }
+  const prompt = `Vergleiche diese zwei Ideen und sage welche mehr Potenzial hat. Antworte auf Deutsch in 3-4 Sätzen.
+
+Idee A: "${topPrio[0].text}"
+Idee B: "${topPrio[1].text}"`;
+  try {
+    const result = await callClaude(prompt, 300);
+    showToast('Vergleich: ' + result.slice(0, 80) + '…');
+    alert('🧠 KI Vergleich:\n\n' + result);
+  } catch(e) {
+    showToast('Fehler: ' + e.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════
+// CHAT
+// ═══════════════════════════════════════
+function openChat(ideaId) {
+  const idea = ideas.find(i => i.id === ideaId);
+  if (!idea) return;
+  if (!apiKey) { showToast('API-Key fehlt', 'error'); return; }
+  currentChatIdeaId = ideaId;
+  chatHistory = [];
+  document.getElementById('chatIdeaPreview').textContent = idea.text;
+  document.getElementById('chatMessages').innerHTML = '';
+  document.getElementById('chatInput').value = '';
+  openModal('chatModal');
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const idea = ideas.find(i => i.id === currentChatIdeaId);
+  if (!idea) return;
+  input.value = '';
+  appendChatMsg(msg, 'user');
+  chatHistory.push({ role: 'user', content: msg });
+  document.getElementById('chatSendLabel').innerHTML = '<span class="spinner"></span>';
+  const topicCtx = getTopicContext(idea.topicId);
+  const systemPrompt = `Du bist ein hilfreicher Strategie-Assistent. Der Nutzer diskutiert diese Idee mit dir:
+"${idea.text}"
+${topicCtx}
+${idea.elaboration ? 'Ausarbeitung: ' + idea.elaboration : ''}
+Antworte auf Deutsch, kurz und präzise.`;
+  try {
+    const messages = [
+      { role: 'user', content: systemPrompt + '\n\n---\nNachricht: ' + msg }
+    ];
+    if (chatHistory.length > 2) {
+      messages[0].content = systemPrompt;
+      messages.push(...chatHistory.slice(-4));
+    }
+    const res = await callClaude(messages[0].content, 400);
+    appendChatMsg(res, 'ai');
+    chatHistory.push({ role: 'assistant', content: res });
+    idea.chatLog.push({ q: msg, a: res, date: new Date().toISOString() });
+    save();
+  } catch(e) {
+    showToast('Fehler: ' + e.message, 'error');
+  }
+  document.getElementById('chatSendLabel').textContent = 'Senden';
+}
+
+function appendChatMsg(text, role) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.textContent = text;
+  const container = document.getElementById('chatMessages');
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ═══════════════════════════════════════
+// FOLLOW-UPS
+// ═══════════════════════════════════════
+function openFollowup(parentId) {
+  const parent = ideas.find(i => i.id === parentId);
+  if (!parent) return;
+  document.getElementById('followupParentPreview').textContent = parent.text;
+  document.getElementById('followupParentId').value = parentId;
+  document.getElementById('followupText').value = '';
+  openModal('followupModal');
+}
+
+function saveFollowup() {
+  const parentId = parseInt(document.getElementById('followupParentId').value);
+  const text = document.getElementById('followupText').value.trim();
+  if (!text) return;
+  const parent = ideas.find(i => i.id === parentId);
+  if (!parent) return;
+  if (!parent.followups) parent.followups = [];
+  parent.followups.push({ id: Date.now(), text, date: new Date().toLocaleDateString('de-DE'), priority: 3, status: 'offen' });
+  parent.history.push({ date: new Date().toISOString(), note: 'Folgeidee hinzugefügt: ' + text.slice(0,50) });
+  save();
+  closeModal('followupModal');
+  renderHome();
+  showToast('Folgeidee gespeichert ✓', 'success');
+}
+
+// ═══════════════════════════════════════
+// EDIT IDEA
+// ═══════════════════════════════════════
+function openEdit(ideaId) {
+  const idea = ideas.find(i => i.id === ideaId);
+  if (!idea) return;
+  document.getElementById('editId').value = ideaId;
+  document.getElementById('editText').value = idea.text;
+  document.getElementById('editStatus').value = idea.status || 'offen';
+  document.getElementById('editPriority').value = idea.priority || 3;
+  document.getElementById('editTags').value = (idea.tags || []).join(' ');
+  document.getElementById('editNote').value = '';
+  const sel = document.getElementById('editTopic');
+  sel.innerHTML = '';
+  topics.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t.id; o.textContent = t.name;
+    sel.appendChild(o);
+  });
+  sel.value = idea.topicId;
+  openModal('editModal');
+}
+
+function saveEdit() {
+  const id = parseInt(document.getElementById('editId').value);
+  const idea = ideas.find(i => i.id === id);
+  if (!idea) return;
+  const oldText = idea.text;
+  idea.text = document.getElementById('editText').value.trim();
+  idea.topicId = document.getElementById('editTopic').value;
+  idea.status = document.getElementById('editStatus').value;
+  idea.priority = parseInt(document.getElementById('editPriority').value);
+  idea.tags = (document.getElementById('editTags').value.match(/#[\w\u00fc\u00e4\u00f6]+/g) || []);
+  const note = document.getElementById('editNote').value.trim();
+  if (note || idea.text !== oldText) {
+    idea.history.push({ date: new Date().toISOString(), note: note || 'Text bearbeitet' });
+  }
+  save();
+  closeModal('editModal');
+  renderHome();
+  showToast('Gespeichert ✓', 'success');
+}
+
+// ═══════════════════════════════════════
+// TOPIC MODAL
+// ═══════════════════════════════════════
+function openTopicModal(topicId = null) {
+  editingTopicId = topicId;
+  topicUrlsTemp = [];
+  selectedColor = '#f5c842';
+  document.getElementById('topicModalTitle').textContent = topicId ? '✏️ THEMA BEARBEITEN' : '📂 NEUES THEMA';
+  document.getElementById('tmName').value = '';
+  document.getElementById('tmDesc').value = '';
+  document.getElementById('tmUrlInput').value = '';
+  document.getElementById('tmUrls').innerHTML = '';
+  if (topicId) {
+    const t = topics.find(x => x.id === topicId);
+    if (t) {
+      document.getElementById('tmName').value = t.name;
+      document.getElementById('tmDesc').value = t.desc || '';
+      topicUrlsTemp = [...(t.urls || [])];
+      selectedColor = t.color || '#f5c842';
+      renderTopicUrls();
+    }
+  }
+  updateColorPicker();
+  openModal('topicModal');
+}
+
+function selectColor(c) {
+  selectedColor = c;
+  updateColorPicker();
+}
+function updateColorPicker() {
+  document.querySelectorAll('.color-opt').forEach(el => {
+    el.style.border = el.dataset.color === selectedColor ? '2px solid white' : '2px solid transparent';
+  });
+}
+
+function addTopicUrl() {
+  const val = document.getElementById('tmUrlInput').value.trim();
+  if (!val) return;
+  topicUrlsTemp.push(val);
+  document.getElementById('tmUrlInput').value = '';
+  renderTopicUrls();
+}
+
+function renderTopicUrls() {
+  const container = document.getElementById('tmUrls');
+  container.innerHTML = topicUrlsTemp.map((u, i) => `
+    <div class="url-item">
+      <span>🔗 ${u}</span>
+      <button onclick="removeTopicUrl(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removeTopicUrl(i) {
+  topicUrlsTemp.splice(i, 1);
+  renderTopicUrls();
+}
+
+function saveTopic() {
+  const name = document.getElementById('tmName').value.trim();
+  if (!name) { showToast('Bitte Name eingeben', 'error'); return; }
+  if (editingTopicId) {
+    const t = topics.find(x => x.id === editingTopicId);
+    if (t) { t.name = name; t.desc = document.getElementById('tmDesc').value.trim(); t.urls = [...topicUrlsTemp]; t.color = selectedColor; }
+  } else {
+    topics.push({ id: 't' + Date.now(), name, color: selectedColor, desc: document.getElementById('tmDesc').value.trim(), urls: [...topicUrlsTemp] });
+  }
+  save();
+  syncTopicSelect();
+  closeModal('topicModal');
+  renderTopics();
+  showToast('Thema gespeichert ✓', 'success');
+}
+
+function deleteTopic(id) {
+  if (!confirm('Thema wirklich löschen? Ideen bleiben erhalten.')) return;
+  topics = topics.filter(t => t.id !== id);
+  save();
+  syncTopicSelect();
+  renderTopics();
+  showToast('Thema gelöscht');
+}
+
+// ═══════════════════════════════════════
+// IDEA ACTIONS
+// ═══════════════════════════════════════
+function deleteIdea(id) {
+  if (!confirm('Idee löschen?')) return;
+  ideas = ideas.filter(i => i.id !== id);
+  save(); renderHome(); showToast('Gelöscht');
+}
+function togglePin(id) {
+  const idea = ideas.find(i => i.id === id);
+  if (idea && !idea.locked) { idea.pinned = !idea.pinned; save(); renderHome(); }
+}
+function toggleLock(id) {
+  const idea = ideas.find(i => i.id === id);
+  if (idea) { idea.locked = !idea.locked; save(); renderHome(); showToast(idea.locked ? '🔒 Gesperrt' : '🔓 Entsperrt'); }
+}
+function toggleTimer(id) {
+  const idea = ideas.find(i => i.id === id);
+  if (!idea) return;
+  if (idea.timerStart) {
+    idea.timerTotal += Date.now() - idea.timerStart;
+    idea.timerStart = null;
+    showToast('Timer gestoppt: ' + formatDuration(idea.timerTotal));
+  } else {
+    idea.timerStart = Date.now();
+    showToast('Timer gestartet ⏱');
+  }
+  save(); renderHome();
+}
+function formatDuration(ms) {
+  const m = Math.floor(ms / 60000);
+  const h = Math.floor(m / 60);
+  return h > 0 ? `${h}h ${m % 60}m` : `${m}m`;
+}
+
+// ═══════════════════════════════════════
+// FILTER & SORT
+// ═══════════════════════════════════════
+function setFilter(f) {
+  currentFilter = f;
+  renderHome();
+}
+function setSort(s) {
+  currentSort = s;
+  document.querySelectorAll('[id^="sort-"]').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('sort-' + s);
+  if (btn) btn.classList.add('active');
+  renderHome();
+}
+function getFiltered() {
+  let list = currentFilter === 'alle' ? [...ideas] :
+             currentFilter === 'pinned' ? ideas.filter(i => i.pinned) :
+             currentFilter.startsWith('status:') ? ideas.filter(i => i.status === currentFilter.slice(7)) :
+             ideas.filter(i => i.topicId === currentFilter);
+  list.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    if (currentSort === 'neu') return b.id - a.id;
+    if (currentSort === 'prio') return b.priority - a.priority;
+    if (currentSort === 'status') return (a.status||'').localeCompare(b.status||'');
+    if (currentSort === 'thema') {
+      const ta = topics.find(t => t.id === a.topicId)?.name || '';
+      const tb = topics.find(t => t.id === b.topicId)?.name || '';
+      return ta.localeCompare(tb);
+    }
+    return 0;
+  });
+  return list;
+}
+
+// ═══════════════════════════════════════
+// RENDER HOME
+// ═══════════════════════════════════════
+function renderHome() {
+  syncTopicSelect();
+  // Filter chips
+  const chips = document.getElementById('filterChips');
+  chips.innerHTML = `
+    <div class="chip ${currentFilter==='alle'?'active':''}" onclick="setFilter('alle')">Alle (${ideas.length})</div>
+    <div class="chip ${currentFilter==='pinned'?'active':''}" onclick="setFilter('pinned')">📌 Angepinnt</div>
+    <div class="chip ${currentFilter==='status:aktiv'?'active':''} status-active" onclick="setFilter('status:aktiv')">In Arbeit</div>
+    <div class="chip ${currentFilter==='status:erledigt'?'active':''} status-done" onclick="setFilter('status:erledigt')">Erledigt</div>`;
+  topics.forEach(t => {
+    const count = ideas.filter(i => i.topicId === t.id).length;
+    chips.innerHTML += `<div class="chip ${currentFilter===t.id?'active':''}" onclick="setFilter('${t.id}')" style="${currentFilter===t.id?'':''}"><span style="color:${t.color}">●</span> ${t.name.split(' ').slice(1).join(' ')} (${count})</div>`;
+  });
+
+  const container = document.getElementById('ideasContainer');
+  const list = getFiltered();
+  if (!list.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">💡</div><h3>Keine Ideen</h3><p>Gib oben deine erste Idee ein<br>oder diktiere sie direkt.</p></div>`;
+    return;
+  }
+  container.innerHTML = list.map(idea => ideaCardHTML(idea)).join('');
+}
+
+function ideaCardHTML(idea) {
+  const topic = topics.find(t => t.id === idea.topicId);
+  const color = topic?.color || '#888';
+  const pLabels = ['','Niedrig','Normal','Mittel','Hoch','Kritisch'];
+  const pIcons = ['','○','◇','◆','▲','⚡'];
+  const p = idea.priority || 3;
+  const statusLabel = {offen:'',aktiv:'🔵 In Arbeit',erledigt:'✅ Erledigt',archiviert:'📦 Archiviert'}[idea.status||'offen']||'';
+  const timerActive = idea.timerStart;
+  const totalTime = idea.timerTotal ? formatDuration(idea.timerTotal) : '';
+  const tags = (idea.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
+  const historyItems = (idea.history||[]).slice(-3).reverse().map(h=>`<div style="font-size:11px;color:var(--text3);margin-bottom:3px">📅 ${new Date(h.date).toLocaleDateString('de-DE')} — ${h.note}</div>`).join('');
+
+  let followupsHTML = '';
+  if (idea.followups && idea.followups.length) {
+    followupsHTML = `<div class="expand-section followups visible">
+      <div style="font-size:11px;color:var(--orange);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">💡 Folgeideen</div>
+      ${idea.followups.map(f=>`
+        <div class="followup-card">
+          <div class="pbar" style="background:${color}"></div>
+          <div style="font-size:13px;color:var(--text)">${escHtml(f.text)}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">🗓 ${f.date}</div>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  return `
+  <div class="idea-card${idea.pinned?' pinned':''}${idea.locked?' locked':''}" id="card_${idea.id}">
+    <div class="pbar" style="background:${color}"></div>
+    <div class="card-top">
+      <div class="idea-body">
+        <div class="idea-text">${escHtml(idea.text)}</div>
+        ${tags ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">${tags}</div>` : ''}
+        ${idea.elaboration?`<div class="expand-section elaboration visible">${escHtml(idea.elaboration)}</div>`:''}
+        ${idea.umsetzungsplan?`<div class="expand-section suggestions visible"><b style="color:var(--purple);font-size:11px;text-transform:uppercase;letter-spacing:.5px">Umsetzungsplan</b><br>${escHtml(idea.umsetzungsplan)}</div>`:''}
+        ${idea.suggestions&&idea.suggestions.length?`<div class="expand-section suggestions visible"><b style="font-size:11px;color:var(--purple);text-transform:uppercase;letter-spacing:.5px">Nächste Schritte</b><ul>${idea.suggestions.map(s=>`<li>${escHtml(s)}</li>`).join('')}</ul></div>`:''}
+        ${followupsHTML}
+        ${historyItems?`<div class="expand-section visible" style="border-left:2px solid var(--text3)">${historyItems}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+        <div class="pbadge p${p}">${pIcons[p]} ${pLabels[p]}</div>
+        ${statusLabel?`<div style="font-size:11px;color:var(--text3)">${statusLabel}</div>`:''}
+        ${idea.pinned?`<span style="font-size:14px">📌</span>`:''}
+        ${idea.locked?`<span style="font-size:14px">🔒</span>`:''}
+      </div>
+    </div>
+    <div class="idea-meta">
+      <span class="meta-tag" style="color:${color}">● ${topic?.name||'?'}</span>
+      <span class="meta-tag">🗓 ${idea.date}</span>
+      ${idea.aiAnalyzed?'<span class="meta-tag" style="color:var(--teal)">⚡ KI</span>':''}
+      ${totalTime?`<span class="meta-tag">⏱ ${totalTime}${timerActive?'…':''}</span>`:''}
+      <div class="card-actions">
+        ${!idea.locked?`
+          ${!idea.aiAnalyzed?`<button class="btn btn-ghost btn-xs" onclick="analyzeIdeaBtn(${idea.id})">⚡</button>`:''}
+          <button class="btn btn-ghost btn-xs" onclick="openChat(${idea.id})" title="Chat">💬</button>
+          <button class="btn btn-ghost btn-xs" onclick="openFollowup(${idea.id})" title="Folgeidee">+💡</button>
+          <button class="btn btn-ghost btn-xs" onclick="togglePin(${idea.id})" title="Anpinnen">${idea.pinned?'📌':'○'}</button>
+          <button class="btn btn-ghost btn-xs" onclick="toggleTimer(${idea.id})" title="Timer">${timerActive?'⏹':'⏱'}</button>
+          <button class="btn btn-ghost btn-xs" onclick="openEdit(${idea.id})" title="Bearbeiten">✏️</button>
+        `:''}
+        <button class="btn btn-ghost btn-xs" onclick="toggleLock(${idea.id})" title="Sperren">${idea.locked?'🔓':'🔒'}</button>
+        ${!idea.locked?`<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="deleteIdea(${idea.id})">✕</button>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+async function analyzeIdeaBtn(id) {
+  if (!apiKey) { showToast('API-Key fehlt', 'error'); return; }
+  const card = document.getElementById('card_' + id);
+  const btn = card?.querySelector('.btn-ghost');
+  if (btn) { btn.innerHTML = '<span class="spinner"></span>'; btn.disabled = true; }
+  await analyzeIdea(id);
+}
+
+// ═══════════════════════════════════════
+// RENDER TOPICS
+// ═══════════════════════════════════════
+function renderTopics() {
+  const container = document.getElementById('topicsContainer');
+  if (!topics.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📂</div><h3>Keine Themen</h3><p>Erstelle dein erstes Thema.</p></div>';
+    return;
+  }
+  container.innerHTML = topics.map(t => {
+    const count = ideas.filter(i => i.topicId === t.id).length;
+    const urlsHTML = (t.urls||[]).map(u=>`<a class="url-pill" href="${u}" target="_blank">🔗 ${u.replace('https://','').slice(0,30)}</a>`).join('');
+    return `
+    <div class="topic-card">
+      <div class="tc-accent" style="background:${t.color}"></div>
+      <div class="tc-top">
+        <div class="tc-name" style="color:${t.color}">${t.name}</div>
+        <div class="tc-count">${count} Ideen</div>
+      </div>
+      ${t.desc?`<div class="tc-desc">${escHtml(t.desc)}</div>`:'<div class="tc-desc" style="font-style:italic">Kein Kontext hinterlegt</div>'}
+      ${urlsHTML?`<div class="tc-urls">${urlsHTML}</div>`:''}
+      <div class="row" style="margin-top:12px">
+        <button class="btn btn-teal btn-sm" id="research_${t.id}" onclick="researchTopic('${t.id}')">🕵️ KI recherchieren</button>
+        <button class="btn btn-ghost btn-sm" onclick="openTopicModal('${t.id}')">✏️ Bearbeiten</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteTopic('${t.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const container = document.getElementById('searchResults');
+  if (!q) { container.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><h3>Suche eingeben</h3><p>Stichwort, Tag oder Thema</p></div>'; return; }
+  const results = ideas.filter(i =>
+    i.text.toLowerCase().includes(q) ||
+    (i.tags||[]).some(t => t.toLowerCase().includes(q)) ||
+    (i.elaboration||'').toLowerCase().includes(q) ||
+    (topics.find(t=>t.id===i.topicId)?.name||'').toLowerCase().includes(q) ||
+    (i.history||[]).some(h => h.note.toLowerCase().includes(q))
+  );
+  if (!results.length) { container.innerHTML = '<div class="empty"><div class="empty-icon">😕</div><h3>Nichts gefunden</h3><p>Versuche ein anderes Stichwort</p></div>'; return; }
+  container.innerHTML = results.map(idea => {
+    const topic = topics.find(t => t.id === idea.topicId);
+    const highlighted = idea.text.replace(new RegExp(q, 'gi'), m => `<span class="highlight">${m}</span>`);
+    const historyCount = (idea.history||[]).length;
+    const followupCount = (idea.followups||[]).length;
+    return `
+    <div class="search-result" onclick="goToIdea(${idea.id})">
+      <div class="sr-topic" style="color:${topic?.color||'#888'}">● ${topic?.name||'?'} · 🗓 ${idea.date}</div>
+      <div class="sr-text">${highlighted}</div>
+      ${historyCount>1||followupCount?`<div style="font-size:11px;color:var(--text3);margin-top:4px">${historyCount} Verlauf-Einträge · ${followupCount} Folgeideen</div>`:''}
+      ${idea.aiAnalyzed&&idea.elaboration?`<div style="font-size:12px;color:var(--text3);margin-top:4px;font-style:italic">${idea.elaboration.slice(0,80)}…</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function goToIdea(id) {
+  currentFilter = 'alle';
+  showPage('home');
+  setTimeout(() => {
+    const el = document.getElementById('card_' + id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
+}
+
+// ═══════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════
+function renderDashboard() {
+  const today = new Date().toLocaleDateString('de-DE');
+  const thisWeek = ideas.filter(i => {
+    const d = new Date(i.createdAt);
+    const now = new Date();
+    const diff = (now - d) / 86400000;
+    return diff <= 7;
+  }).length;
+  const todayCount = ideas.filter(i => i.date === today).length;
+  const critical = ideas.filter(i => i.priority >= 4).length;
+  const done = ideas.filter(i => i.status === 'erledigt').length;
+  const analyzed = ideas.filter(i => i.aiAnalyzed).length;
+  const weekProgress = Math.min(100, Math.round(thisWeek / weekGoal * 100));
+
+  // Monday review
+  const oldIdeas = ideas.filter(i => {
+    const d = new Date(i.createdAt);
+    const diff = (new Date() - d) / 86400000;
+    return diff > 7 && i.status === 'offen' && !i.locked;
+  }).slice(0, 3);
+
+  const topicStats = topics.map(t => ({
+    t, count: ideas.filter(i => i.topicId === t.id).length
+  })).sort((a,b) => b.count - a.count);
+
+  const container = document.getElementById('dashboardContent');
+  container.innerHTML = `
+    <div class="dash-grid">
+      <div class="dash-stat"><div class="dash-n">${ideas.length}</div><div class="dash-l">Ideen gesamt</div></div>
+      <div class="dash-stat"><div class="dash-n">${todayCount}</div><div class="dash-l">Heute</div></div>
+      <div class="dash-stat"><div class="dash-n" style="color:var(--red)">${critical}</div><div class="dash-l">Dringend</div></div>
+      <div class="dash-stat"><div class="dash-n" style="color:var(--green)">${done}</div><div class="dash-l">Erledigt</div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Wochenziel: ${thisWeek} / ${weekGoal} Ideen</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${weekProgress}%"></div></div>
+      <div style="font-size:12px;color:var(--text3)">${weekProgress}% erreicht · ${analyzed} KI-analysiert</div>
+    </div>
+
+    ${oldIdeas.length ? `
+    <div class="review-card">
+      <h4>🔄 MONTAGS-REVIEW</h4>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:8px">Diese Ideen warten noch auf Umsetzung:</div>
+      ${oldIdeas.map(i => `
+        <div style="background:var(--surface2);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:13px;cursor:pointer" onclick="goToIdea(${i.id})">
+          <div style="color:var(--text)">${i.text.slice(0,80)}…</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">Erstellt: ${i.date}</div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    <div class="card">
+      <div class="section-label">Ideen pro Thema</div>
+      ${topicStats.map(({t,count}) => `
+        <div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
+            <span style="color:${t.color}">${t.name}</span>
+            <span style="color:var(--text3)">${count}</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${ideas.length?Math.round(count/ideas.length*100):0}%;background:${t.color}"></div></div>
+        </div>`).join('')}
+    </div>
+
+    <div class="card">
+      <div class="section-label">Aktionen</div>
+      <div class="row">
+        <button class="btn btn-teal" onclick="analyzeAll()">⚡ Alle analysieren</button>
+        <button class="btn btn-purple" onclick="compareIdeas()">🧠 Ideen vergleichen</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn btn-ghost" onclick="openCalModal()">📅 Kalender</button>
+        <button class="btn btn-ghost" onclick="exportText()">📋 Exportieren</button>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════
+function openCalModal() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthNames = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  const dayLabels = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+
+  const ideasByDate = {};
+  ideas.forEach(i => { if (!ideasByDate[i.date]) ideasByDate[i.date] = []; ideasByDate[i.date].push(i); });
+
+  let calHTML = `<div style="text-align:center;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:12px;color:var(--gold)">${monthNames[month]} ${year}</div>`;
+  calHTML += '<div class="cal-grid">';
+  dayLabels.forEach(d => calHTML += `<div class="cal-day-label">${d}</div>`);
+  for (let i = 0; i < firstDay; i++) calHTML += '<div class="cal-day empty"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${d}.${month+1}.${year}`;
+    const isToday = d === now.getDate();
+    const hasIdeas = ideasByDate[dateStr]?.length;
+    calHTML += `<div class="cal-day${isToday?' today':''}${hasIdeas?' has-ideas':''}" style="font-size:12px;color:${isToday?'var(--gold)':'var(--text2)'}">${d}</div>`;
+  }
+  calHTML += '</div>';
+
+  document.getElementById('calContent').innerHTML = calHTML;
+  openModal('calModal');
+}
+
+// ═══════════════════════════════════════
+// SETTINGS RENDER
+// ═══════════════════════════════════════
+function renderSettings() {
+  if (apiKey) {
+    document.getElementById('apiKeyInput').value = apiKey;
+    document.getElementById('apiStatus').innerHTML = '✅ <span style="color:var(--teal)">API verbunden</span>';
+  }
+  document.getElementById('weekGoalInput').value = weekGoal;
+  updateWeekGoalStatus();
+}
+function saveApiKey() {
+  const k = document.getElementById('apiKeyInput').value.trim();
+  if (!k.startsWith('sk-ant-')) { showToast('Ungültiger Key (muss mit sk-ant- beginnen)', 'error'); return; }
+  apiKey = k;
+  localStorage.setItem('if2_apikey', apiKey);
+  document.getElementById('apiStatus').innerHTML = '✅ <span style="color:var(--teal)">API verbunden</span>';
+  showToast('API verbunden ✓', 'success');
+}
+function showApiHelp() {
+  const card = document.getElementById('apiHelpCard');
+  card.style.display = card.style.display === 'none' ? 'block' : 'none';
+}
+function saveWeekGoal() {
+  weekGoal = parseInt(document.getElementById('weekGoalInput').value) || 10;
+  localStorage.setItem('if2_weekgoal', weekGoal);
+  updateWeekGoalStatus();
+  showToast('Ziel gespeichert ✓', 'success');
+}
+function updateWeekGoalStatus() {
+  const thisWeek = ideas.filter(i => { const d = new Date(i.createdAt); return (new Date()-d)/86400000 <= 7; }).length;
+  document.getElementById('weekGoalStatus').textContent = `Diese Woche: ${thisWeek} / ${weekGoal} Ideen`;
+}
+
+// ═══════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════
+function exportText() {
+  const lines = ['# IDEAFLOW – Alle Ideen\n', `Export: ${new Date().toLocaleString('de-DE')}\n`];
+  topics.forEach(t => {
+    const tIdeas = ideas.filter(i => i.topicId === t.id);
+    if (!tIdeas.length) return;
+    lines.push(`\n## ${t.name}\n`);
+    if (t.desc) lines.push(`Kontext: ${t.desc}\n`);
+    tIdeas.sort((a,b)=>b.priority-a.priority).forEach(idea => {
+      const pLabels=['','Niedrig','Normal','Mittel','Hoch','Kritisch'];
+      lines.push(`[P${idea.priority} ${pLabels[idea.priority]}] ${idea.text}`);
+      if (idea.elaboration) lines.push(`  Ausarbeitung: ${idea.elaboration}`);
+      if (idea.umsetzungsplan) lines.push(`  Plan: ${idea.umsetzungsplan}`);
+      (idea.suggestions||[]).forEach(s => lines.push(`  • ${s}`));
+      (idea.followups||[]).forEach(f => lines.push(`  └ ${f.text}`));
+      lines.push('');
+    });
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>showToast('Text kopiert ✓','success'));
+}
+function exportEmail() {
+  const lines = ['IdeaFlow – Meine Ideen\n'];
+  topics.forEach(t => {
+    const tIdeas = ideas.filter(i=>i.topicId===t.id);
+    if (!tIdeas.length) return;
+    lines.push(`\n${t.name.toUpperCase()}`);
+    tIdeas.forEach(i=>lines.push(`• ${i.text}`));
+  });
+  window.location.href = `mailto:?subject=Meine IdeaFlow-Ideen&body=${encodeURIComponent(lines.join('\n'))}`;
+}
+function confirmClearAll() {
+  if (confirm('ACHTUNG: Alle Ideen und Themen werden gelöscht. Wirklich fortfahren?')) {
+    ideas = []; topics = [];
+    localStorage.removeItem('if2_ideas');
+    localStorage.removeItem('if2_topics');
+    location.reload();
+  }
+}
+
+// ═══════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ═══════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════
+let toastTimeout;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type?' '+type:'');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+syncTopicSelect();
+renderHome();
+if (apiKey) {
+  document.getElementById('apiKeyInput').value = apiKey;
+}
+document.getElementById('weekGoalInput').value = weekGoal;
+</script>
+</body>
+</html>
